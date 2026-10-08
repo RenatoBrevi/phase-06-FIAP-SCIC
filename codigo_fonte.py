@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from pathlib import Path # Manipular caminhos com POO independenteo do SO
 
@@ -7,8 +8,16 @@ pasta_projeto = Path(__file__).resolve().parent
 # Arquivo de dados .CSV utiliazdo no projeto
 arquivo_dados = pasta_projeto / "dados_aurora_siger.csv"
 
+# Função para limpar o temrinal
+def limpar_tela():
+    os.system("cls" if os.name == "nt" else "clear")
+
+# Função para aguardar o usuário apertar "ENTER" para voltar ao menu principal
+def enter():
+    input("\nPressione 'ENTER' para voltar ao menu principal...")
+
 # Carregadi a base de dados simulados da Aurora Siger a partir do .CSV
-def carregar_dados():
+def carregar_dados(exibir_mensagem=False): # Define se o sistema mostra a informação de carregamento.
     try:
         dados = pd.read_csv(arquivo_dados)
         
@@ -78,14 +87,18 @@ def main():
     dados = carregar_dados() # Carregamento inicial da base
 
     while True:
+        limpar_tela()
         exibir_menu()
         opcao = input("Escolha uma opção: ").strip()
+        limpar_tela()
 
         if opcao == "1":
-            dados = carregar_dados() # Permite visualizar os registros no .CSV
+            dados = carregar_dados(exibir_mensagem=True) # Permite visualizar os registros no .CSV
 
             if dados is not None:
                 visualizar_dados(dados)
+                enter()
+                limpar_tela()
 
         elif opcao == "2":
             funcionalidade_em_desenvolvimento("Consultar Registros")
