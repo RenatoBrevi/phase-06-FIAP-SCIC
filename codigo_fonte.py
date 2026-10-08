@@ -198,6 +198,156 @@ def consultar_registros(dados):
 
         enter()
     
+# Classificando o erro relativo de acordo com critérios simulados - Menu 3
+def classificar_erro_relativo(erro_relativo):
+    if erro_relativo <= 5:
+        return "Baixo"
+    elif erro_relativo <= 15:
+        return "Atenção"
+    else:
+        return "Preocupante"
+    
+# Função para calcular os indicadores operacionais e erros numéricos
+def calcular_indicadores_erros(dados):
+    if dados is None:
+        print("\nNenhum dado está dispon[ivel para análise.")
+        return dados
+    
+    # Cria uma cópia para preservar os dados originais carregados
+    dados_calculados = dados.copy()
+
+    # Calculando a potência aproximada dos dispositivos
+    dados_calculados["potencia_w"] = (
+        dados_calculados["tensao_v"] * dados_calculados["corrente_a"]
+    ).round(2)
+
+    # Calculando o erro absoluto entre a latência prevista e a latência observada
+    dados_calculados["erro_absoluto_ms"] = (
+        dados_calculados["latencia_observada_ms"] - dados_calculados["latencia_prevista_ms"]
+    ).abs()
+
+    # Calculando o erro relativo em porcentagem
+    dados_calculados["erro_relativo_pct"] = (
+        (
+            dados_calculados["erro_absoluto_ms"] / dados_calculados["latencia_observada_ms"]
+        ) * 100
+    ).round(2)
+
+    # Classificando o erro relativo
+    dados_calculados["classificacao_erro"] = (
+        dados_calculados["erro_relativo_pct"].apply(classificar_erro_relativo)
+    )
+
+    limpar_tela()
+
+    print("=" * 70)
+    print("INDICADORES OPERACIONAIS E ERROS NUMÉRICOS - AURORA SIGER")
+    print("=" * 70)
+
+    # Indicadores gerais
+    latencia_media = dados_calculados["latencia_observada_ms"].mean()
+    potencia_media = dados_calculados["potencia_w"].mean()
+    erro_absoluto_medio = dados_calculados["erro_absoluto_ms"].mean()
+    erro_relativo_medio = dados_calculados["erro_relativo_pct"].mean()
+
+    print("\nRESUMO GERAL")
+    print("-" * 70)
+    print(f"Registros Analisados: {len(dados_calculados)}")
+    print(f"Latência Observada Média: {latencia_media:.2f}ms")
+    print(f"Potência Média Aproximada: {potencia_media:.2f}W")
+    print(f"Erro Absoluto Médio: {erro_absoluto_medio:.2f}ms")
+    print(f"Erro Relativo Médio: {erro_relativo_medio:.2f}%")
+
+    # Quantidade de registros por classificação
+    print("\nCLASSIFICAÇÃO DOS ERROS")
+    print("-" * 70)
+
+    quantidade_baixo = (
+        dados_calculados["classificacao_erro"] == "Baixo"
+    ).sum()
+
+    quantidade_atencao = (
+        dados_calculados["classificacao_erro"] == "Atenção"
+    ).sum()
+
+    quantidade_preocupante = (
+        dados_calculados["classificacao_erro"] == "Preocupante"
+    ).sum()
+
+    print(f"Baixo: {quantidade_baixo}")
+    print(f"Atenção: {quantidade_atencao}")
+    print(f"Preocupante: {quantidade_preocupante}")
+
+    print("\nCritérios Simulados Utilizados pelo SCIC:")
+    print("Até 5% ----------> Baixo")
+    print("Acima de 5% -----> Atenção")
+    print("Acima de 15% ----> Preocupante")
+
+    # Mosntrando os registros com maiores erros relativos
+    maiores_erros = dados_calculados.sort_values(
+        by="erro_relativo_pct",
+        ascending=False
+    ).head(10)
+
+    colunas_exibicao = [
+        "ciclo",
+        "modulo",
+        "codigo_sensor",
+        "latencia_prevista_ms",
+        "latencia_observada_ms",
+        "potencia_w",
+        "erro_absoluto_ms",
+        "erro_relativo_pct",
+        "classificacao_erro"
+    ]
+
+    print("\n 10 REGISTROS COM MAIOR ERRO RELATIVO")
+    print("-" * 70)
+    print(maiores_erros[colunas_exibicao].to_string(index=False))
+
+    # Identificando o maior erro encontrado
+    indice_maior_erro = dados_calculados["erro_relativo_pct"].idxmax()
+    maior_erro = dados_calculados.loc[indice_maior_erro]
+
+    print("\nMAIOR DESVIO ENCONTRADO")
+    print("-" * 70)
+    print(f"Módulo: {maior_erro['modulo']}")
+    print(f"Sensor: {maior_erro['codigo_sensor']}")
+    print(f"Latência Prevista: {maior_erro['latencia_prevista_ms']}ms")
+    print(f"Latência Observada: {maior_erro['latencia_observada_ms']}ms")
+    print(f"Erro Absoluto: {maior_erro['erro_absoluto_ms']:.2f}ms")
+    print(f"Erro Relativo: {maior_erro['erro_relativo_pct']:.2f}%")
+    print(f"Classificação: {maior_erro['classificacao_erro']}")
+
+    # Demonstração simples da precisão do ponto flutuante
+    print("\nPRECISÃO NUMÉRICA E PONTO FLUTUANTE")
+    print("-" * 70)
+
+    exemplo_ponto_flutuante = 0.1 + 0.2
+
+    print(f"No Python, 0.1 + 0.2 resulta em: {exemplo_ponto_flutuante}")
+    print(f"Arredondando para 2 casas: {exemplo_ponto_flutuante:.2f}")
+
+    print(
+    """
+Pequenas diferenças podem ocorrer por que alguns números decimais não possuem
+representação binária exata. Por isso, os indicadores do SCIC são arredondados
+para facilitar a apresentação e interpretação.
+    """
+    )
+
+    print("\nINTERPRETAÇÃO")
+    print("-" * 70)
+
+    print(
+        """
+Erros baixos indicam que a latência observada permaneceu próxima da estimativa.
+Erros maiores exigem atenção porque podem indicar instabilidade ou anomalias na comunicação.
+Os limites usados nesta simulação são critérios internos do protótipo SCIC e não representam limites universais.
+        """
+    )
+
+    return dados_calculados
 
 # Exibindo o menu principal SCIC
 def exibir_menu():
@@ -239,7 +389,9 @@ def main():
         elif opcao == "2":
             consultar_registros(dados)
         elif opcao == "3":
-            funcionalidade_em_desenvolvimento("Calcular Indicadores e Erros")
+            dados = calcular_indicadores_erros(dados)
+            enter()
+            limpar_tela()
         elif opcao == "4":
             funcionalidade_em_desenvolvimento("Executar Modelo de Previsão")
         elif opcao == "5":
