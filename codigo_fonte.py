@@ -39,7 +39,7 @@ def carregar_dados(exibir_mensagem=False): # Define se o sistema mostra a inform
 
     return None
 
-# Exibindo uma vis'ao simples da base carregada.
+# Exibindo uma vis'ao simples da base carregada - Menu 1
 def visualizar_dados(dados):
     if dados is None:
         print("\nNenhum dado est[a disponível para visualização.")
@@ -60,6 +60,144 @@ def visualizar_dados(dados):
 
     print("\nRegistros por Status:")
     print(dados["status"].value_counts().to_string())
+
+# Função para consultar os registros - Menu 2
+def consultar_registros(dados):
+    if dados is None:
+        print("\nNenhum dado está disponível para consulta.")
+        return
+    
+    while True:
+        limpar_tela()
+
+        print("\n" + "=" * 60)
+        print("CONSULTAR REGISTROS - AURORA SIGER")
+        print("=" * 60)
+
+        print("1 - Pesquisar por Módulo")
+        print("2 - Pesquisar por Sensor")
+        print("3 - Pesquisar por Status")
+        print("4 - Pesquisar por Ciclo")
+        print("0 - Voltar")
+        print("=" * 60)
+
+        opcao_consulta = input("Escolha o tipo de consulta: ").strip()
+
+        # Colunas principais que serão mostradas
+        colunas_exibicao = [
+            "ciclo",
+            "modulo",
+            "codigo_sensor",
+            "latencia_prevista_ms",
+            "latencia_observada_ms",
+            "status",
+            "prioridade",
+            "criticidade",
+            "mensagem_alerta"
+        ]
+
+        resultado = None
+
+        # Consulta por módulo
+        if opcao_consulta == "1":
+            limpar_tela()
+
+            print("=" * 60)
+            print("CONSULTA POR MÓDULO")
+            print("=" * 60)
+
+            print("\nMódulos disponíveis:")
+
+            for modulo in dados["modulo"].unique():
+                print(f"- {modulo}")
+
+            pesquisa = input("\nDigite o nome do módulo: ".strip())
+
+            resultado = dados[
+                dados["modulo"].str.contains(
+                    pesquisa,
+                    case=False,
+                    na=False
+                )
+            ]
+        
+        # Consulta por sensor
+        elif opcao_consulta == "2":
+            limpar_tela()
+
+            print("=" * 60)
+            print("CONSULTA POR SENSOR")
+            print("=" * 60)
+
+            print("\nSensores Disponíveis:")
+
+            for sensor in sorted(dados["codigo_sensor"].unique()):
+                print(f"- {sensor}")
+
+            pesquisa = input("\nDigite o código do sensor: ").strip()
+
+            resultado = dados[
+                dados["codigo_sensor"].str.lower() == pesquisa.lower()
+            ]
+
+        # Consulta por status
+        elif opcao_consulta == "3":
+            limpar_tela()
+
+            print("=" * 60)
+            print("CONSULTA POR STATUS")
+            print("=" * 60)
+
+            print("\nStatus Disponíveis:")
+            print("- Ativo")
+            print("- Manutenção")
+            print("- Alerta")
+
+            pesquisa = input("\nDigite o status: ").strip()
+
+            resultado = dados[
+                dados["status"].str.lower() == pesquisa.lower()
+            ]
+
+        # Colsunta por ciclo
+        elif opcao_consulta == "4":
+            limpar_tela()
+
+            print("=" * 60)
+            print("CONSULTA POR CICLO")
+            print("=" * 60)
+
+            try:
+                ciclo = int(input("\nDigite o ciclo de 1 a 8: "))
+
+                resultado = dados[
+                    dados["ciclo"] == ciclo
+                ]
+            
+            except ValueError:
+                print("\nCiclo inválido. Digite um número inteiro.")
+                return
+
+        # Voltar sem realizar consulta
+        elif opcao_consulta == "0":
+            return
+        else:
+            print("\nOpção de consulta inválida.")
+            enter()
+            continue
+        
+        # Exibindo o resultado da pesquisa
+        if resultado.empty:
+            print("\nNenhum registro encontrado.")
+        else:
+            print("\n" + "=" * 60)
+            print(f"REGISTROS ENCONTRADOS: {len(resultado)}")
+            print("=" * 60)
+
+            print(resultado[colunas_exibicao].to_string(index=False)) # Transforma tabela Pandas em texto.
+
+        enter()
+    
 
 # Exibindo o menu principal SCIC
 def exibir_menu():
@@ -94,14 +232,12 @@ def main():
 
         if opcao == "1":
             dados = carregar_dados(exibir_mensagem=True) # Permite visualizar os registros no .CSV
-
             if dados is not None:
                 visualizar_dados(dados)
                 enter()
                 limpar_tela()
-
         elif opcao == "2":
-            funcionalidade_em_desenvolvimento("Consultar Registros")
+            consultar_registros(dados)
         elif opcao == "3":
             funcionalidade_em_desenvolvimento("Calcular Indicadores e Erros")
         elif opcao == "4":
