@@ -1,0 +1,49 @@
+ciclo,modulo,tipo_modulo,codigo_sensor,latencia_prevista_ms,latencia_observada_ms,tensao_v,corrente_a,status,prioridade,criticidade,modulo_essencial,mensagem_alerta
+1,Comunicacao Central,comunicacao,COM-01,120,124,24.0,2.1,Ativo,1,1,1,Operacao normal
+2,Comunicacao Central,comunicacao,COM-02,125,132,23.9,2.15,Manutencao,2,2,1,Oscilacao moderada de latencia
+3,Comunicacao Central,comunicacao,COM-01,123,128,24.1,2.12,Ativo,1,1,1,Operacao normal
+4,Comunicacao Central,comunicacao,COM-02,128,145,23.6,2.3,Manutencao,3,3,1,Latencia acima da faixa esperada
+5,Comunicacao Central,comunicacao,COM-01,130,133,24.0,2.14,Ativo,1,1,1,Operacao normal
+6,Comunicacao Central,comunicacao,COM-02,126,129,24.1,2.11,Ativo,1,1,1,Operacao normal
+7,Comunicacao Central,comunicacao,COM-01,124,160,22.8,2.55,Alerta,5,5,1,Latencia critica no enlace principal
+8,Comunicacao Central,comunicacao,COM-02,129,131,24.0,2.13,Ativo,1,1,1,Operacao normal
+1,Habitacao Alfa,habitacao,HAB-01,170,173,12.0,1.4,Ativo,1,1,0,Operacao normal
+2,Habitacao Alfa,habitacao,HAB-02,168,170,12.1,1.42,Ativo,1,1,0,Operacao normal
+3,Habitacao Alfa,habitacao,HAB-01,172,180,11.9,1.45,Ativo,1,1,0,Operacao normal
+4,Habitacao Alfa,habitacao,HAB-02,175,177,12.0,1.41,Ativo,1,1,0,Operacao normal
+5,Habitacao Alfa,habitacao,HAB-01,173,185,11.6,1.5,Manutencao,2,2,0,Variacao de latencia no modulo habitacional
+6,Habitacao Alfa,habitacao,HAB-02,171,174,12.0,1.43,Ativo,1,1,0,Operacao normal
+7,Habitacao Alfa,habitacao,HAB-01,176,178,12.1,1.4,Ativo,1,1,0,Operacao normal
+8,Habitacao Alfa,habitacao,HAB-02,174,176,12.0,1.42,Ativo,1,1,0,Operacao normal
+1,Agricultura Hidroponica,agricultura,AGR-01,190,195,24.0,2.8,Ativo,1,1,0,Operacao normal
+2,Agricultura Hidroponica,agricultura,AGR-02,188,202,23.7,2.95,Manutencao,2,2,0,Atraso moderado na telemetria agricola
+3,Agricultura Hidroponica,agricultura,AGR-01,192,198,24.1,2.85,Ativo,1,1,0,Operacao normal
+4,Agricultura Hidroponica,agricultura,AGR-02,195,230,22.9,3.3,Alerta,4,4,0,Atraso critico na telemetria agricola
+5,Agricultura Hidroponica,agricultura,AGR-01,193,196,24.0,2.82,Ativo,1,1,0,Operacao normal
+6,Agricultura Hidroponica,agricultura,AGR-02,197,205,23.8,2.9,Ativo,1,1,0,Operacao normal
+7,Agricultura Hidroponica,agricultura,AGR-01,194,199,24.1,2.84,Ativo,1,1,0,Operacao normal
+8,Agricultura Hidroponica,agricultura,AGR-02,191,193,24.0,2.81,Ativo,1,1,0,Operacao normal
+1,Laboratorio Cientifico,laboratorio,LAB-01,210,214,24.0,2.4,Ativo,1,1,0,Operacao normal
+2,Laboratorio Cientifico,laboratorio,LAB-02,208,211,24.1,2.42,Ativo,1,1,0,Operacao normal
+3,Laboratorio Cientifico,laboratorio,LAB-01,215,225,23.9,2.5,Ativo,1,1,0,Operacao normal
+4,Laboratorio Cientifico,laboratorio,LAB-02,212,220,24.0,2.46,Ativo,1,1,0,Operacao normal
+5,Laboratorio Cientifico,laboratorio,LAB-01,218,260,22.7,2.85,Alerta,4,4,0,Instabilidade critica no enlace do laboratorio
+6,Laboratorio Cientifico,laboratorio,LAB-02,214,219,24.1,2.44,Ativo,1,1,0,Operacao normal
+7,Laboratorio Cientifico,laboratorio,LAB-01,216,223,23.9,2.48,Ativo,1,1,0,Operacao normal
+8,Laboratorio Cientifico,laboratorio,LAB-02,211,216,24.0,2.43,Ativo,1,1,0,Operacao normal
+1,Suporte Medico,suporte_medico,MED-01,150,152,12.0,1.8,Ativo,1,1,1,Operacao normal
+2,Suporte Medico,suporte_medico,MED-02,152,158,11.9,1.85,Ativo,1,1,1,Operacao normal
+3,Suporte Medico,suporte_medico,MED-01,148,150,12.1,1.82,Ativo,1,1,1,Operacao normal
+4,Suporte Medico,suporte_medico,MED-02,155,170,11.7,2.0,Manutencao,4,3,1,Atraso no canal de suporte medico
+5,Suporte Medico,suporte_medico,MED-01,153,156,12.0,1.86,Ativo,1,1,1,Operacao normal
+6,Suporte Medico,suporte_medico,MED-02,149,151,12.1,1.83,Ativo,1,1,1,Operacao normal
+7,Suporte Medico,suporte_medico,MED-01,154,215,10.9,2.3,Alerta,5,5,1,Atraso critico no canal medico
+8,Suporte Medico,suporte_medico,MED-02,151,154,12.0,1.84,Ativo,1,1,1,Operacao normal
+1,Armazenamento de Dados,armazenamento_dados,DAT-01,135,137,12.0,1.6,Ativo,1,1,1,Operacao normal
+2,Armazenamento de Dados,armazenamento_dados,DAT-02,138,140,12.1,1.62,Ativo,1,1,1,Operacao normal
+3,Armazenamento de Dados,armazenamento_dados,DAT-01,136,139,12.0,1.61,Ativo,1,1,1,Operacao normal
+4,Armazenamento de Dados,armazenamento_dados,DAT-02,140,145,11.9,1.65,Ativo,1,1,1,Operacao normal
+5,Armazenamento de Dados,armazenamento_dados,DAT-01,142,149,11.8,1.7,Ativo,1,1,1,Operacao normal
+6,Armazenamento de Dados,armazenamento_dados,DAT-02,139,143,12.0,1.64,Ativo,1,1,1,Operacao normal
+7,Armazenamento de Dados,armazenamento_dados,DAT-01,137,141,12.1,1.63,Ativo,1,1,1,Operacao normal
+8,Armazenamento de Dados,armazenamento_dados,DAT-02,141,190,10.8,2.05,Alerta,5,4,1,Latencia critica no armazenamento de dados
