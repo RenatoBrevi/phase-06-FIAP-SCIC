@@ -1,6 +1,10 @@
 import os
 import pandas as pd
+import numpy as np
 from pathlib import Path # Manipular caminhos com POO independenteo do SO
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # Caminho da pasta onde o arquivo Python está localizado
 pasta_projeto = Path(__file__).resolve().parent
@@ -349,6 +353,170 @@ Os limites usados nesta simulação são critérios internos do protótipo SCIC 
 
     return dados_calculados
 
+# Função para executar e avaliar o modelo simples de previsão - Menu 4
+def executar_modelo_previsao(dados):
+    if dados is None:
+        print("\nNenhum dado está disponível para o modelo.")
+        return
+    
+    print("=" * 70)
+    print("MODELO SIMPLES DE PREVISÃO DE LATÊNCIA - AURORA SIGER")
+    print("=" * 70)
+
+    # Variáveis utilizadas pelo modelo
+    variaveis_entrada = [
+        "latencia_prevista_ms",
+        "tensao_v",
+        "corrente_a",
+        "ciclo"
+    ]
+
+    variavel_resposta = "latencia_observada_ms"
+
+    # dropna() para remover evetuais registros incompletos apenas nas colunas
+    dados_modelo = dados[variaveis_entrada + [variavel_resposta]].dropna()
+
+    # X contendo as variáveis utilizadas para realizar a previsão
+    X = dados_modelo[variaveis_entrada]
+
+    # y contendo o valor que é desejado prever
+    y = dados_modelo[variavel_resposta]
+
+    # Dividindo os dados - 75% para treino e 25% para teste
+    X_treino, X_teste, y_treino, y_teste = train_test_split(
+        X,
+        y,
+        test_size=0.25,
+        random_state=42
+    )
+
+    # Criando o modelo de regressão linear
+    modelo = LinearRegression()
+
+    # Treinando o modelo utilizando os dados de treinamento
+    modelo.fit(X_treino, y_treino)
+
+    # Realizando previsões utilizando os dados de teste
+    previsoes = modelo.predict(X_teste)
+
+    # Calculando as métricas de avaliação
+    mae = mean_absolute_error(y_teste, previsoes)
+    mse = mean_squared_error(y_teste, previsoes)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_teste, previsoes)
+
+    # Baseline para prever sempre a média da latência do conjunto utilizado no treinamento
+    media_treino = y_treino.mean()
+
+    previsoes_baseline = np.full(len(y_teste), media_treino)
+
+    mae_baseline = mean_absolute_error(y_teste, previsoes_baseline)
+
+    rmse_baseline = np.sqrt(mean_squared_error(y_teste, previsoes_baseline))
+
+    # Exibindo os resultados
+    print("\nOBJETIVO DO MODELO")
+    print("-" * 70)
+
+    print("Prever a latência observada de comunicação dos módulos da Aurora Siger")
+
+    print("\nVariáveis de Entrada:")
+
+    for variavel in variaveis_entrada:
+        print(f"- {variavel}")
+
+    print(f"\nVariável Prevista:")
+    print(f"- {variavel_resposta}")
+
+    print("\nDIVISÃO DOS DADOS")
+    print("-" * 70)
+
+    print(f"Total de Registros: {len(dados_modelo)}")
+    print(f"Registros de Treinamento: {len(X_treino)}")
+    print(f"Registros de Teste: {len(X_teste)}")
+
+    print("\nMÉTRICAS DO MODELO")
+    print("-" * 70)
+
+    print(f"MAE:.........{mae:.2f}ms")
+    print(f"MSE:.........{mse:.2f}")
+    print(f"RMSE:........{rmse:.2f}ms")
+    print(f"R²:..........{r2:.4f}")
+
+    # Comparação com o baseline
+    print("\nCOMPARAÇÃO COM BASELINE")
+    print("-" * 70)
+
+    print("O baseline utiliza apenas a média das latências do conjunto de treinamento.")
+
+    print(f"\nMAE do modelo:.......{mae:.2f}ms")
+    print(f"MAE do baseline:.......{mae_baseline:.2f}ms")
+    print(f"\nRMSE do modelo:......{rmse:.2f}ms")
+    print(f"RMSE do baseline:......{rmse_baseline:.2f}ms")
+
+    if mae < mae_baseline:
+        print("\nO modelo apresentou erro médio menor que o baseline.")
+    else:
+        print("\nO modelo não apresentou melhora em relação ao baseline.")
+
+    # Exemplos de previsão
+    comparacao = pd.DataFrame({
+        "latencia_real_ms": y_teste.values,
+        "latencia_prevista_modelo_ms": previsoes
+    })
+
+    comparacao["latencia_prevista_modelo_ms"] = (
+        comparacao["latencia_prevista_modelo_ms"].round(2)
+    )
+
+    print("\nEXEMPLO DE PREVISÕES")
+    print("-" * 70)
+
+    print(comparacao.head(5).to_string(index=False))
+
+    # Interpretação
+    print("\nINTERPRETAÇÃO DAS MÉTRICAS")
+    print("-" * 70)
+
+    print(f"O MAE indica que as previsões apresentam, em média, "
+          f"um erro absoluto de aproximadamente {mae:.2f}ms."  
+    )
+
+    print(
+        f"\nO RMSE foi de {rmse:.2f}ms. Como essa métrica "
+        "penaliza mais os erros elevados, ela ajuda a identificar "
+        "a influência de previsões com desvios maiores."
+    )
+
+    if rmse > mae:
+        print(
+            "\nO RMSE ficou acima do MAE, indicando que alguns "
+            "registros apresentaram erros maiores que a média."
+        )
+
+    print(f"\nO R² obtido foi {r2:.4f}.")
+
+    if r2 >= 0.80:
+        print(
+            "Neste conjunto simulado, o modelo explicou uma parcela "
+            "elevada da variação da latência."
+        )
+    elif r2 >= 0.50:
+        print(
+            "Neste conjunto simulado, o modelo explicou uma parcela "
+            "moderada da variação da latência."
+        )
+    else:
+        print(
+            "Neste conjunto simulado, o modelo apresentou capacidade "
+            "limitada de explicar a variação da latência."
+        )
+    
+    print(
+        "\nUm R² alto não significa que o modelo esteja perfeito. "
+        "As métricas devem ser interpretadas em conjunto."
+    )
+
 # Exibindo o menu principal SCIC
 def exibir_menu():
     print("\n" + "=" * 60)
@@ -393,7 +561,9 @@ def main():
             enter()
             limpar_tela()
         elif opcao == "4":
-            funcionalidade_em_desenvolvimento("Executar Modelo de Previsão")
+            executar_modelo_previsao(dados)
+            enter()
+            limpar_tela()
         elif opcao == "5":
             funcionalidade_em_desenvolvimento("Analisar Alertas por Prioridade")
         elif opcao == "6":
